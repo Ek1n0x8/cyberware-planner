@@ -990,11 +990,17 @@ function renderAbout() {
 }
 
 // ---------------------------------------------------------------- options (langue, son, affichage)
-let videosOn = true;
+// iPhone / iPad / Safari : les vidéos du jeu (WebM VP9 avec transparence) n'y sont pas décodées par la puce vidéo
+// (lecture lente, voire fond noir) → images fixes par défaut ; l'option « Vidéos » permet de les remettre.
+const UA = navigator.userAgent;
+const appleWebKit = /iPhone|iPad|iPod/.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1)
+  || (/Safari\//.test(UA) && !/Chrome|Chromium|CriOS|Edg|OPR|Firefox|FxiOS|Android/.test(UA));
+let videosOn = !appleWebKit;
 let textSize = 'M'; // taille du texte des panneaux : S / M / L
 let reduceMotionOpt = false; // « Réduire les animations »
 try {
-  videosOn = localStorage.getItem('videos') !== '0';
+  const v = localStorage.getItem('videos');
+  if (v !== null) videosOn = v !== '0';
   textSize = ['S', 'M', 'L'].includes(localStorage.getItem('textSize')) ? localStorage.getItem('textSize') : 'M';
   reduceMotionOpt = localStorage.getItem('reduceMotion') === '1';
 } catch { /* ignoré */ }
