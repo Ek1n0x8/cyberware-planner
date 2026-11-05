@@ -1,0 +1,16 @@
+{
+  "name": "cyberware-planner",
+  "private": true,
+  "type": "module",
+  "description": "Planner de cyberware pour Cyberpunk 2077 — création de fan non officielle",
+  "scripts": {
+    "extract": "node extract/extract-all.mjs",
+    "extract:force": "node extract/extract-all.mjs --force",
+    "assets": "node extract/extract-assets.mjs",
+    "check": "node extract/check.mjs"
+  },
+  "devDependencies": {
+    "lamejs": "^1.2.1",
+    "pngjs": "^7.0.0"
+  }
+}

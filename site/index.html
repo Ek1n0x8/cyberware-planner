@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Planner de cyberware</title>
+  <meta name="description" content="Planificateur de cyberware pour Cyberpunk 2077 (création de fan non officielle).">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 4h18l6 6v18H10l-6-6z' fill='%23ff3b4f'/%3E%3Cpath d='M11 11h10v10H11z' fill='%230b0d12'/%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 4h18l6 6v18H10l-6-6z"/><path d="M11 11h10v10H11z" class="hole"/></svg>
+      <div><h1 data-t="title"></h1><p data-t="subtitle"></p></div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-view="build" data-t="tabBuild"></button>
+      <button role="tab" data-view="catalog" data-t="tabCatalog"></button>
+      <button role="tab" data-view="options" data-t="tabOptions"></button>
+      <button role="tab" data-view="about" data-t="tabAbout"></button>
+    </nav>
+    <div class="actions">
+      <button id="btn-share" class="btn accent" data-t="share"></button>
+      <button id="btn-reset" class="btn" data-t="reset"></button>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-build" class="view build">
+      <div class="mini" id="mini" aria-live="polite"></div>
+      <div class="rd-viewport" id="rd-viewport"></div>
+      <div class="ripper">
+        <div class="vgauge capacity" id="gauge-cap"></div>
+        <section class="stage" id="doll"></section>
+        <div class="vgauge armor" id="gauge-armor"></div>
+      </div>
+      <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+      <aside class="drawer left settings" id="settings" aria-hidden="true"></aside>
+      <aside class="drawer right summary" id="summary" aria-hidden="true"></aside>
+      <button type="button" class="side-tab left" id="settings-tab" aria-controls="settings"></button>
+      <button type="button" class="side-tab right" id="summary-tab" aria-controls="summary"></button>
+    </section>
+
+    <section id="view-options" class="view options" hidden>
+      <div class="panel prose" id="options"></div>
+    </section>
+
+    <section id="view-catalog" class="view catalog" hidden>
+      <div class="filters" id="catalog-filters"></div>
+      <p class="count" id="catalog-count"></p>
+      <div class="cards" id="catalog-list"></div>
+    </section>
+
+    <section id="view-about" class="view about" hidden>
+      <div class="panel prose" id="about"></div>
+    </section>
+  </main>
+
+  <footer class="legal">
+    <p data-t="fanNotice"></p>
+    <p><span data-t="credits"></span> · <span data-t="dataFrom"></span> <span id="data-date"></span></p>
+  </footer>
+
+  <dialog id="picker" class="sheet"></dialog>
+  <dialog id="detail" class="sheet wide"></dialog>
+  <dialog id="upgrade-popup" class="up-popup"></dialog>
+  <dialog id="confirm" class="confirm"></dialog>
+  <dialog id="share" class="share-box"></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <!-- écran de chargement (masqué par main.js quand les données sont prêtes) -->
+  <div id="loading" role="status" aria-live="polite">
+    <div class="ld-title">Initialisation</div>
+    <div class="ld-bar"><i id="ld-fill"></i></div>
+    <div class="ld-text" id="ld-text">0 %</div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

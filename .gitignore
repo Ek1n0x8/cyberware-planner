@@ -1,0 +1,5 @@
+node_modules/
+data/sample/
+# Extraction brute des fichiers du jeu : se refait avec les outils de extract/ (pas besoin de la publier)
+data/
+assets/
