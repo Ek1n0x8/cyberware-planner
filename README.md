@@ -1,120 +1,83 @@
-# Planner de cyberware — Cyberpunk 2077
+# Cyberware Planner — Cyberpunk 2077
 
-Création de fan non officielle, non approuvée ni soutenue par CD PROJEKT RED.
-Cyberpunk 2077 et ses contenus (textes, icônes, sons) © CD PROJEKT RED.
+A free, browser-based cyberware planner that recreates the Cyberpunk 2077 ripperdoc screen.
+Plan your build, compare tiers and upgrade options, and share it with a single link.
 
-## Prérequis
+**Live site:** https://ek1n0x8.github.io/cyberware-planner/
 
-- Cyberpunk 2077 installé avec **REDmod** (DLC gratuit).
-- **Node.js** (LTS).
-- **WolvenKit CLI** : `dotnet tool install -g WolvenKit.CLI` (demande le SDK .NET 10).
-- Recommandé : activer les chemins longs de Windows (voir la FAQ de WolvenKit).
+> This is an unofficial fan work and is not approved or endorsed by CD PROJEKT RED.
+> Cyberpunk 2077 and its content (texts, icons, sounds, videos) © CD PROJEKT RED.
 
-## Relancer l'extraction des données
+## Features
 
-```bash
-node extract/extract-all.mjs
-```
+- Faithful recreation of the in-game ripperdoc screen (layout, animations, sounds).
+- All 122 obtainable cyberware items, every tier, cost, price and stat.
+- Cyber-capacity, armor, Edgerunner overload and build cost, computed with the game's own rules.
+- Upgrade options with Chipware Connoisseur, including random stat ranges.
+- Catalog with search, filters and sorting.
+- 12 languages; cyberware names and descriptions come straight from the game's localization files.
+- Builds are stored in the URL: bookmark or share the link to save a build.
 
-Après une mise à jour du jeu, forcer la ré-extraction des fichiers lus par WolvenKit :
+## Data accuracy
 
-```bash
-node extract/extract-all.mjs --force
-```
+Every value is extracted from the installed game files (REDmod tweaks and scripts, game archives via WolvenKit).
+No wiki data is used, except for how to obtain a few items that no vendor sells; those are labelled
+"community info" with their source. Values that cannot be read from the files are shown as "?".
 
-Si le jeu n'est pas dans le dossier Steam par défaut, définir `CP2077_DIR` avant de lancer la commande.
-Les fichiers bruts de WolvenKit vont dans un dossier temporaire court (`%TEMP%\cwraw`, modifiable avec `CW_RAW_DIR`).
-Les fichiers du jeu ne sont jamais modifiés.
+`node extract/verify-game.mjs` compares the site data against the game's compiled database
+(1,101 tiers and 74,500 values, 0 differences at the time of writing).
+The rules and their sources in the game files are documented in [RULES.md](RULES.md) (in French).
 
-Résultat dans `data/` : `cyberware.json`, `slots.json`, `perks.json`, `loc_fr.json`, `loc_en.json`, `extract-report.json`.
-Contrôles rapides : `node extract/check.mjs` et `node extract/spot.mjs <nom>`.
+## Project structure
 
-Schéma des données : [docs/SCHEMA.md](docs/SCHEMA.md).
-Règles du charcudoc (avec leurs sources dans les fichiers du jeu) : [RULES.md](RULES.md).
-Vérification de quelques règles sur les données : `node extract/verify-rules.mjs`.
+| Path | Contents |
+|---|---|
+| `site/` | The website: plain HTML, CSS and JavaScript, no build step. This folder is what gets deployed. |
+| `extract/` | Node.js tools that read the game files and generate the site data. |
+| `docs/SCHEMA.md` | Data schema. |
+| `RULES.md` | Ripperdoc rules with references to the game files. |
 
-## Extraire les icônes et les sons
+The raw extraction output (`data/`, `assets/`) is not committed; it can be regenerated from the game.
 
-D'abord `npm install` (une fois), puis, après l'extraction des données :
-
-```bash
-node extract/extract-assets.mjs
-```
-
-Résultat :
-
-- `assets/icons/*.png` : icônes des implants, des effets et des perks, découpées dans les planches du jeu.
-  Correspondance nom → fichier : `data/icons.json` (avec la liste de ce qui manque).
-- `assets/ui/*.png` : interface du charcudoc tirée du jeu — silhouettes de V homme et femme (corps entier par système :
-  squelette, sanguin, tégumentaire, nerveux, immunitaire ; et parties : bras, mains, jambes, colonne, cerveau, yeux),
-  fond de la salle, fonds des jauges verticales. Liste et provenance : `data/ui.json`.
-- `assets/sounds/*.ogg` + `*.mp3` : sons de l'interface du charcudoc. `data/sounds.json` indique pour chaque
-  événement les fichiers, s'ils se jouent ensemble (`mode: "layers"`) et le script du jeu qui les utilise.
-
-Contrôle : `node extract/check-icons.mjs`.
-
-### Écran du charcudoc et vidéos du corps
-
-- `node extract/build-ripperdoc.mjs` : lit la mise en page (`ripperdoc.inkwidget`, référence 3840×2160) et les animations
-  (`ripperdoc_animations.inkanim`) de l'écran du charcudoc → `site/data/ripperdoc.json`.
-- `node extract/convert-videos.mjs` : convertit les 27 vidéos du corps (format Bink 2 du jeu) en WebM VP9 avec transparence
-  (`assets/video/`). Nécessite :
-  - **ffmpeg** (`winget install Gyan.FFmpeg`) ;
-  - **RAD Video Tools**, l'outil officiel et gratuit du format Bink : https://www.radgametools.com/bnkdown.htm
-    (archive `RADTools.7z`, mot de passe « RAD »). Il suffit d'en extraire `radvideo64.exe` (avec 7-Zip) dans
-    `%LOCALAPPDATA%\RADVideoTools\`, ou d'indiquer son chemin dans la variable `RADVIDEO`.
-- Safari ne lit pas le WebM transparent : il affiche les images fixes à la place.
-
-## Le site
-
-Le site est dans `site/` : HTML, CSS et JavaScript simples, **sans étape de compilation**. Le dossier `site/`
-se suffit à lui-même (données et assets compris) : c'est lui qu'on met en ligne.
-
-Pourquoi pas de framework (React, Svelte…) ni d'outil comme Vite : le site a une seule page et peu d'éléments
-interactifs ; sans compilation, il n'y a rien à installer pour le modifier ou le publier, et le dossier `site/`
-fonctionne tel quel sur n'importe quel hébergeur statique.
-
-### Mettre à jour les données du site
-
-Après une extraction (données, icônes, sons) :
-
-```bash
-node extract/build-site-data.mjs
-```
-
-Ce script produit `site/data/game.json` (version allégée, environ 900 Ko, ~100 Ko une fois compressé par l'hébergeur)
-et `site/data/sounds.json`, puis copie `assets/` dans `site/assets/`.
-
-### Lancer en local
+## Running locally
 
 ```bash
 node extract/serve.mjs
 ```
 
-Puis ouvrir http://localhost:5173 (un serveur est nécessaire : un double-clic sur `index.html` ne suffit pas).
+Then open http://localhost:5173 (a local server is required; opening `index.html` directly will not work).
 
-Tests du moteur de calcul :
+Engine tests:
 
 ```bash
 node extract/test-engine.mjs
 ```
 
-### Mettre en ligne gratuitement
+## Regenerating the data
 
-- **Netlify** (le plus simple) : se connecter sur app.netlify.com → « Add new site » → « Deploy manually »,
-  puis glisser-déposer le dossier `site/`. Une adresse en `.netlify.app` est donnée tout de suite.
-- **GitHub Pages** : créer un dépôt, y envoyer le projet, puis dans Settings → Pages choisir « GitHub Actions »
-  ou publier le contenu de `site/` sur une branche `gh-pages`.
-- **Vercel** : importer le dépôt et indiquer `site` comme dossier racine, sans commande de build.
+Requirements:
 
-Le site doit rester **gratuit** et garder la mention « création de fan non officielle » du pied de page
-(conditions des Fan Content Guidelines de CD PROJEKT RED).
+- Cyberpunk 2077 installed with **REDmod** (free DLC). Set `CP2077_DIR` if the game is not in the default Steam folder.
+- **Node.js** (LTS), then `npm install`.
+- **WolvenKit CLI**: `dotnet tool install -g WolvenKit.CLI` (requires the .NET 10 SDK).
+- For the body videos: **ffmpeg** and **RAD Video Tools** (official free Bink tool).
 
-### Comment le site est organisé
+```bash
+node extract/extract-all.mjs        # game data (add --force after a game update)
+node extract/extract-assets.mjs     # icons, UI images and sounds
+node extract/build-ripperdoc.mjs    # ripperdoc screen layout and animations
+node extract/convert-videos.mjs     # body videos (Bink 2 → WebM VP9 with alpha)
+node extract/build-site-data.mjs    # site/data/*.json and site/assets/
+```
 
-- `site/js/engine.js` : le calcul du build (capacité, coût, armure, stats secondaires, Edgerunner…), chaque règle
-  renvoie à `RULES.md`.
-- `site/js/main.js` : l'interface (corps, slots, choix d'implant, récapitulatif, catalogue, fiches).
-- `site/js/share.js` : le build encodé dans l'adresse (`#b=…`) pour le partage par lien.
-- `site/js/i18n.js` : les textes de l'interface en français et en anglais (les textes du jeu viennent des données).
-- `site/js/audio.js` : les sons du charcudoc et le bouton pour couper le son.
+The game files are never modified.
+
+## Deployment
+
+Every push to `main` deploys the `site/` folder to GitHub Pages through GitHub Actions
+(`.github/workflows/deploy.yml`).
+
+## License and usage
+
+This project follows the [CD PROJEKT RED Fan Content Guidelines](https://www.cdprojektred.com/en/fan-content):
+the site is and will remain free, with no paywall, and keeps the unofficial fan work notice.
