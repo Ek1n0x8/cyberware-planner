@@ -484,7 +484,12 @@ writeFileSync(join(SITE, 'data', 'game.json'), gameJson);
 // Textes du jeu des autres langues (chargés par le site seulement si la langue est choisie)
 mkdirSync(join(SITE, 'data', 'lang'), { recursive: true });
 for (const l of EXTRA_LANGS) writeFileSync(join(SITE, 'data', 'lang', `${l}.json`), JSON.stringify(Array.from({ length: textIndex }, (_, i) => overlay[l][i] ?? null)));
-const soundMap = Object.fromEntries(Object.entries(sounds).map(([k, v]) => [k, { mode: v.mode, files: v.files.map((f) => ({ ogg: f.ogg, mp3: f.mp3 })) }]));
+// Boucle de fond : les événements « isLooping » du jeu (ui_gui_cyberware_tab_open, …_paperdoll_zoom_out_01) partagent
+// un même son (mediaId) ; c'est lui qui tourne en boucle tant que le menu du charcudoc est ouvert → « lp: 1 »
+const loopUse = new Map();
+for (const v of Object.values(sounds)) if (v.isLooping) for (const f of v.files) loopUse.set(f.mediaId, (loopUse.get(f.mediaId) || 0) + 1);
+const soundMap = Object.fromEntries(Object.entries(sounds).map(([k, v]) => [k, { mode: v.mode,
+  files: v.files.map((f) => ({ ogg: f.ogg, mp3: f.mp3, ...(v.isLooping && loopUse.get(f.mediaId) > 1 ? { lp: 1 } : {}) })) }]));
 writeFileSync(join(SITE, 'data', 'sounds.json'), JSON.stringify(soundMap));
 
 // Vidéos du corps (extract/convert-videos.mjs) : liste nom → fichier

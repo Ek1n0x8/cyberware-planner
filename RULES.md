@@ -270,3 +270,7 @@ Vérifié dans les tweaks : aucune référence « Items.X » (vendeur, butin, r�
 |---|---|
 | AdvancedBaseLowEnergyDeck (+ Uncommon/Rare/Epic/Legendary LowEnergy / HighEnergy) | Modèles dont héritent les vrais cyberdecks (Militech Paraline Mk.1–5, Arasaka Shadow), pas des implants. Le cyberdeck de départ de V est AdvancedMilitechParalineMKICommon (progression_builds/base_values.tweak). |
 | AdvancedSmartStorageCommon (Tampon de surmenage) | Référencé uniquement par ses propres paliers : contenu coupé. |
+
+## 16. Boucle de fond du charcudoc
+
+`ui_gui_cyberware_tab_open` (joué à l'ouverture, ripperdoc.script) et `ui_gui_cyberware_paperdoll_zoom_out_01` sont « isLooping » dans les métadonnées Wwise et partagent le même son (4,7 s) : c'est la boucle qui tourne tant que le menu est ouvert. Sur le site, elle démarre au premier geste (les navigateurs bloquent le son avant) et ne tourne qu'en un exemplaire.

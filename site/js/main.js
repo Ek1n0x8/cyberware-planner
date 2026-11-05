@@ -1176,7 +1176,7 @@ function loadingProgress(p) {
   ]);
   game = indexGame(gameData);
   setPerkNames(perkName);
-  initAudio(Object.fromEntries(Object.entries(soundData).map(([k, v]) => [k, { ...v, files: v.files.map((f) => ({ ogg: `assets/${f.ogg}`, mp3: f.mp3 && `assets/${f.mp3}` })) }])));
+  initAudio(Object.fromEntries(Object.entries(soundData).map(([k, v]) => [k, { ...v, files: v.files.map((f) => ({ ...f, ogg: `assets/${f.ogg}`, mp3: f.mp3 && `assets/${f.mp3}` })) }])));
   await loadLangTexts(getLang());
   setLang(getLang());
   state = loadInitialState();
