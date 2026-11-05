@@ -904,3 +904,9 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 .values-actions .btn-max { margin: 0; }
 .btn-max.reset { border-color: #ff5c5c; background: rgba(255, 92, 92, .08); color: #ff5c5c; }
 .btn-max.reset:hover { background: rgba(255, 92, 92, .2); }
+
+/* Écrans tactiles : pas de touche « Échap » affichée (pas de clavier) ; appui plus réactif (pas d'attente du double-tap zoom) */
+@media (hover: none) and (pointer: coarse) {
+  .rd-hint .key, .btn .kbd { display: none; }
+}
+button, a, [role="button"], .rd-slot, .rd-item, .slot, .card { touch-action: manipulation; }

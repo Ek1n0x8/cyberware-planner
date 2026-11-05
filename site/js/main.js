@@ -1104,8 +1104,21 @@ $('#btn-reset').addEventListener('click', () => confirmBox(t('resetTitle'), t('r
 async function copyLink() {
   try { await navigator.clipboard.writeText(location.href); toast(t('shareCopied')); } catch { window.prompt(t('shareManual'), location.href); }
 }
+// Téléphone / tablette : le bouton ouvre directement le menu « Partager » du système (iOS, Android) ;
+// sur ordinateur (ou si le système refuse), la fenêtre de partage du site
+const touchDevice = () => matchMedia('(hover: none) and (pointer: coarse)').matches;
 $('#btn-share').addEventListener('click', () => {
   save();
+  if (navigator.share && touchDevice()) {
+    play('ui_menu_onpress');
+    navigator.share({ title: t('shareText'), text: t('shareText'), url: location.href }).catch((e) => {
+      if (e && e.name !== 'AbortError') openShareDialog(); // annulé par l'utilisateur : rien à faire
+    });
+    return;
+  }
+  openShareDialog();
+});
+function openShareDialog() {
   const dlg = $('#share');
   const url = location.href;
   const text = t('shareText');
@@ -1127,7 +1140,7 @@ $('#btn-share').addEventListener('click', () => {
         h('span', { class: 'share-ico more', 'aria-hidden': 'true' }), t('shareMore')) : null));
   play('ui_menu_onpress');
   dlg.showModal();
-});
+}
 $('#drawer-backdrop').addEventListener('click', () => closeDrawers());
 // Languette du bord gauche : ouvre / ferme le panneau des valeurs
 // Languettes des bords : ouvrent / ferment les panneaux (valeurs à gauche, stats à droite)
