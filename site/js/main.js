@@ -32,7 +32,11 @@ function h(tag, attrs = {}, ...children) {
     if (v === undefined || v === null || v === false) continue;
     if (k === 'class') el.className = v;
     else if (k === 'text') el.textContent = v;
-    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    // Survol : souris (et stylet) seulement. Sur écran tactile, iOS transforme le 1er appui en « survol » dès que
+    // le survol change l'affichage (fiche, zone éclairée) : il fallait alors toucher deux fois pour ouvrir.
+    else if (k === 'onmouseenter' || k === 'onmouseleave') {
+      el.addEventListener(k === 'onmouseenter' ? 'pointerenter' : 'pointerleave', (e) => { if (e.pointerType !== 'touch') v(e); });
+    } else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
     else el.setAttribute(k, v === true ? '' : v);
   }
   for (const c of children.flat()) if (c !== null && c !== undefined && c !== false) el.append(c instanceof Node ? c : document.createTextNode(String(c)));
