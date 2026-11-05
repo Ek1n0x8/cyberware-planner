@@ -18,6 +18,10 @@ let ctx = null, gain = null;
 const buffers = new Map(); // src → AudioBuffer | Promise
 const elements = new Map(); // repli <audio>
 
+// iPhone : session audio « ambient » = les sons du site se mélangent à la musique des autres applis
+// au lieu de la couper (Safari 16.4+ ; suit aussi le bouton silencieux, comme les sons d'interface)
+try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch { /* non pris en charge */ }
+
 function context() {
   if (!AC) return null;
   if (!ctx) {
@@ -42,12 +46,17 @@ function load(src) {
   return p;
 }
 // Le navigateur n'autorise le son qu'après un geste : on débloque au premier appui, puis on prépare tous les sons
+// Une seule fois : un son vide joué pendant le premier geste débloque la sortie audio sur iOS
+// (le rejouer à chaque appui interrompait la musique des autres applis)
+let unlocked = false;
 function unlock() {
   const c = context();
   if (!c) return;
   if (c.state === 'suspended') c.resume().catch(() => {});
-  // iOS : jouer un son vide pendant le geste débloque définitivement la sortie audio
+  if (unlocked) return;
+  unlocked = true;
   try { const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, 22050); s.connect(c.destination); s.start(0); } catch { /* ignoré */ }
+  for (const ev of ['pointerdown', 'touchstart', 'keydown']) window.removeEventListener(ev, unlock, { capture: true });
 }
 for (const ev of ['pointerdown', 'touchstart', 'keydown']) window.addEventListener(ev, unlock, { capture: true, passive: true });
 

@@ -274,12 +274,9 @@ const COMMUNITY_SOURCES = {
     url: 'https://gamerguides.com/cyberpunk-2077/guide/phantom-liberty/main-jobs/ive-seen-that-face-before-walkthrough' },
   AdvancedKiroshiOptics: { fr: 'Offert par Viktor pendant la mission principale « The Ripperdoc ».', en: 'Given by Viktor during the main job “The Ripperdoc”.',
     url: 'https://cyberpunk2077.wiki.fextralife.com/Kiroshi+Optics+MK.1' },
-  AdvancedBaseLowEnergyDeck: { fr: 'Cyberdeck de départ de V.', en: 'V’s starting cyberdeck.',
-    url: 'https://dotesports.com/cyberpunk/news/all-cyberdecks-in-cyberpunk-2077' },
   AdvancedReversePowerInductor: { fr: 'Vendu par le charcudoc de Downtown et Fingers selon Game8 (page peut-être antérieure à la 2.0).',
     en: 'Sold by the Downtown ripperdoc and Fingers according to Game8 (page may predate 2.0).',
     url: 'https://www.gamesatlas.com/cyberpunk-2077/cyberware/inductor' },
-  AdvancedSmartStorageCommon: { fr: 'Introuvable sur les wikis et guides : probablement retiré du jeu.', en: 'Not found on wikis or guides: probably cut from the game.', url: null },
   AdvancedCasiusTattoo: { fr: 'Récompense de « Chippin’ In » (la soirée avec Johnny).', en: 'Reward from “Chippin’ In” (Johnny’s night out).',
     url: 'https://game8.co/games/Cyberpunk-2077/archives/314216' },
   AdvancedYakuzaTattoo: { fr: 'Récompense de « The Gig » : gratuit chez le charcudoc de Cassius Ryder.', en: 'Reward from “The Gig”: free at Cassius Ryder’s ripperdoc.',
@@ -287,6 +284,13 @@ const COMMUNITY_SOURCES = {
 };
 // Implants non obtenables (contenu coupé, builds de test : extract-all.mjs) : retirés du site
 cyberware = cyberware.filter((c) => !c.unobtainable);
+// Retirés aussi, après vérification dans les tweaks (aucune référence « Items.X » : ni vendeur, ni butin, ni récompense,
+// ni équipement de départ — RULES.md §15) :
+//  - AdvancedBaseLowEnergyDeck : ce ne sont pas des implants mais les MODÈLES dont héritent les vrais cyberdecks
+//    (Militech Paraline Mk.1–5, Arasaka Shadow) ; le cyberdeck de départ de V est AdvancedMilitechParalineMKICommon.
+//  - AdvancedSmartStorageCommon (Tampon de surmenage) : référencé seulement par ses propres paliers → contenu coupé.
+const NOT_IN_GAME = new Set(['AdvancedBaseLowEnergyDeck', 'AdvancedSmartStorageCommon']);
+cyberware = cyberware.filter((c) => !NOT_IN_GAME.has(c.id));
 // Paliers non obtenables : pour un implant vendu, les paliers en dessous du premier palier vendu
 // (on ne peut pas redescendre de palier). Le jeu les garde avec des valeurs à 0 (ex. Booster universel Niveau 1-2).
 for (const c of cyberware) {

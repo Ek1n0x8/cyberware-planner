@@ -261,3 +261,12 @@ tatouages Johnny (« Chippin' In ») et Tyger Claws (« The Gig »), Inducteur (
 | Jauge de capacité : « Cyber-capacité » utilisé / max, description du jeu, « Avantages augmentant la cyber-capacité » : Edgerunner et Dépassement des limites (achetés ou non) | ✅ | `ripperdocBarTooltip.script` ; `cyberdecktooltip.inkwidget` (LocKey 88306, 92541, 92566) |
 | Cadenas de surcharge : infobulle « Edgerunner » ; avec dépassement : dépassé de N, santé max réduite, chances de Fureur = dépassement × 0,1 % | ✅ (règles) / ❓ (santé : affichée en %, le jeu montre des PV — la santé max de V n'est pas calculée) | idem (92565, 92567, 92568) |
 | Jauge d'armure : « Armure » total / max du niveau, description, phrase de réduction des dégâts, « Pro du chrome (Niveau 2) » ; seuls Squelette, Système tégumentaire et Jambes restent visibles | ✅ / ❓ (le % de réduction utilise `GetArmorEffectivenessValue`, constante du moteur illisible → « ? ») | `ripperdoc.script` (OnBarHover, UpdateArmorBar) ; LocKey 40290, 92542, 93545, 92569 |
+
+## 15. Implants retirés après vérification (novembre 2026)
+
+Vérifié dans les tweaks : aucune référence « Items.X » (vendeur, butin, récompense, équipement de départ).
+
+| Record | Pourquoi |
+|---|---|
+| AdvancedBaseLowEnergyDeck (+ Uncommon/Rare/Epic/Legendary LowEnergy / HighEnergy) | Modèles dont héritent les vrais cyberdecks (Militech Paraline Mk.1–5, Arasaka Shadow), pas des implants. Le cyberdeck de départ de V est AdvancedMilitechParalineMKICommon (progression_builds/base_values.tweak). |
+| AdvancedSmartStorageCommon (Tampon de surmenage) | Référencé uniquement par ses propres paliers : contenu coupé. |
