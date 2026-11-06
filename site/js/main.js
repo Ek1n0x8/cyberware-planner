@@ -1127,8 +1127,34 @@ $('#btn-share').addEventListener('click', () => {
     } catch { openShareDialog(); }
     return;
   }
+  // Android, navigateur d'appli sans partage web (WebView de Discord, de l'appli Google…) : on demande directement
+  // à Android son menu « Partager » (intent ACTION_SEND). Si l'appli bloque la demande, la page reste visible :
+  // la fenêtre du site s'ouvre alors au bout d'une seconde.
+  if (/Android/i.test(navigator.userAgent)) {
+    play('ui_menu_onpress');
+    androidShare(data);
+    return;
+  }
   openShareDialog();
 });
+function androidShare({ text, url }) {
+  const intent = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;`
+    + `S.android.intent.extra.TEXT=${encodeURIComponent(`${text} ${url}`)};`
+    + `S.android.intent.extra.SUBJECT=${encodeURIComponent(text)};end`;
+  let left = false;
+  const away = () => { left = true; };
+  document.addEventListener('visibilitychange', away, { once: true });
+  window.addEventListener('blur', away, { once: true });
+  // cadre caché : si l'appli refuse le lien, l'erreur reste dans le cadre et la page du site ne bouge pas
+  const frame = h('iframe', { src: intent, style: 'display:none', 'aria-hidden': 'true' });
+  document.body.append(frame);
+  setTimeout(() => {
+    frame.remove();
+    document.removeEventListener('visibilitychange', away);
+    window.removeEventListener('blur', away);
+    if (!left) openShareDialog();
+  }, 1000);
+}
 function openShareDialog() {
   const dlg = $('#share');
   const url = location.href;
