@@ -333,6 +333,8 @@ function showTipEl(anchor, tip) {
 }
 function hideTooltip() { const t0 = document.getElementById('cw-tooltip'); if (t0) t0.remove(); }
 
+// Focus venu du clavier (Tab) et non d'un appui du doigt ou d'un clic
+function keyboardFocus(e) { try { return e.currentTarget.matches(':focus-visible'); } catch { return false; } }
 function slotButton(area, i) {
   const slot = area.slots[i];
   const s = state.slots[area.id][i];
@@ -348,7 +350,9 @@ function slotButton(area, i) {
     onclick: () => { hideTooltip(); if (unlocked || fam) openPicker(area.id, i); else play('ui_menu_attributes_fail'); },
     onmouseenter: (e) => { play('ui_menu_hover'); showBody(area.id); if (fam) showTooltip(e.currentTarget, fam, s.q); },
     onmouseleave: () => { showBody(null); hideTooltip(); },
-    onfocus: (e) => { showBody(area.id); if (fam) showTooltip(e.currentTarget, fam, s.q); },
+    // focus au clavier seulement : sur Android, toucher une case lui donne aussi le focus ; l'image du corps changeait
+    // alors sous le doigt (zoom), le premier appui était perdu et le corps restait zoomé
+    onfocus: (e) => { if (!keyboardFocus(e)) return; showBody(area.id); if (fam) showTooltip(e.currentTarget, fam, s.q); },
     onblur: () => { showBody(null); hideTooltip(); },
   }, fam && fam.icon ? h('img', { src: `assets/${fam.icon}`, alt: '' }) : h('span', { class: unlocked ? 'socket' : 'socket lock' }),
   fam ? h('span', { class: 'q', text: qualityName(fam.t[s.q].q).replace(/^\D+/, '') }) : null);
@@ -686,7 +690,7 @@ function openStatChoice(areaId, slotIndex, { upgrade = false } = {}) {
   }
   const optionCard = (i, card) => h('div', {
     class: `up-card opt ${sel === i ? 'sel' : ''}`, tabIndex: 0, role: 'button', 'aria-pressed': String(sel === i),
-    onmouseenter: () => select(i), onfocus: () => select(i), onclick: () => { select(i); revealButton(); },
+    onmouseenter: () => select(i), onfocus: (e) => { if (keyboardFocus(e)) select(i); }, onclick: () => { select(i); revealButton(); },
   }, card);
   function render() {
     // Fiche actuelle (cadre cyan), puis la flèche d'amélioration
