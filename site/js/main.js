@@ -1106,14 +1106,25 @@ async function copyLink() {
 }
 // Téléphone / tablette : le bouton ouvre directement le menu « Partager » du système (iOS, Android) ;
 // sur ordinateur (ou si le système refuse), la fenêtre de partage du site
-const touchDevice = () => matchMedia('(hover: none) and (pointer: coarse)').matches;
+// Téléphone ou tablette : système mobile (Android, iOS, iPadOS), ou écran tactile seul. Le seul test « tactile »
+// ne suffit pas : certains Android (stylet S Pen…) se déclarent avec survol et pointeur fin.
+const mobileDevice = () => /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+  || (navigator.userAgentData && navigator.userAgentData.mobile)
+  || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1)
+  || matchMedia('(hover: none) and (pointer: coarse)').matches;
 $('#btn-share').addEventListener('click', () => {
   save();
-  if (navigator.share && touchDevice()) {
+  const data = { title: t('shareText'), text: t('shareText'), url: location.href };
+  // Le navigateur intégré de certaines applis (Discord, Instagram… sur Android) n'a pas le partage natif :
+  // on ouvre alors la fenêtre du site (copier le lien, réseaux)
+  const canNative = navigator.share && (!navigator.canShare || navigator.canShare(data));
+  if (canNative && mobileDevice()) {
     play('ui_menu_onpress');
-    navigator.share({ title: t('shareText'), text: t('shareText'), url: location.href }).catch((e) => {
-      if (e && e.name !== 'AbortError') openShareDialog(); // annulé par l'utilisateur : rien à faire
-    });
+    try {
+      navigator.share(data).catch((e) => {
+        if (e && e.name !== 'AbortError') openShareDialog(); // annulé par l'utilisateur : rien à faire
+      });
+    } catch { openShareDialog(); }
     return;
   }
   openShareDialog();
