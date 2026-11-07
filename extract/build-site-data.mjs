@@ -269,17 +269,18 @@ function fillStats(desc, vals) {
 const familyIcon = (name) => (icons[name] ? icons[name].file : null);
 // Obtention des implants non vendus : ABSENTE des fichiers du jeu, relevée sur les wikis / guides (novembre 2026).
 // Affichée sur le site comme « info communautaire », avec le lien de la source (RULES.md §12).
+// free : implant offert (récompense de mission) → aucun prix d'achat compté dans le coût du build (RULES.md §17).
 const COMMUNITY_SOURCES = {
-  MaskCW: { fr: 'Récompense de mission principale (Phantom Liberty).', en: 'Main job reward (Phantom Liberty).',
+  MaskCW: { free: 1, fr: 'Récompense de mission principale (Phantom Liberty).', en: 'Main job reward (Phantom Liberty).',
     url: 'https://gamerguides.com/cyberpunk-2077/guide/phantom-liberty/main-jobs/ive-seen-that-face-before-walkthrough' },
-  AdvancedKiroshiOptics: { fr: 'Offert par Viktor pendant la mission principale « The Ripperdoc ».', en: 'Given by Viktor during the main job “The Ripperdoc”.',
+  AdvancedKiroshiOptics: { free: 1, fr: 'Offert par Viktor pendant la mission principale « The Ripperdoc ».', en: 'Given by Viktor during the main job “The Ripperdoc”.',
     url: 'https://cyberpunk2077.wiki.fextralife.com/Kiroshi+Optics+MK.1' },
   AdvancedReversePowerInductor: { fr: 'Vendu par le charcudoc de Downtown et Fingers selon Game8 (page peut-être antérieure à la 2.0).',
     en: 'Sold by the Downtown ripperdoc and Fingers according to Game8 (page may predate 2.0).',
     url: 'https://www.gamesatlas.com/cyberpunk-2077/cyberware/inductor' },
-  AdvancedCasiusTattoo: { fr: 'Récompense de « Chippin’ In » (la soirée avec Johnny).', en: 'Reward from “Chippin’ In” (Johnny’s night out).',
+  AdvancedCasiusTattoo: { free: 1, fr: 'Récompense de « Chippin’ In » (la soirée avec Johnny).', en: 'Reward from “Chippin’ In” (Johnny’s night out).',
     url: 'https://game8.co/games/Cyberpunk-2077/archives/314216' },
-  AdvancedYakuzaTattoo: { fr: 'Récompense de « The Gig » : gratuit chez le charcudoc de Cassius Ryder.', en: 'Reward from “The Gig”: free at Cassius Ryder’s ripperdoc.',
+  AdvancedYakuzaTattoo: { free: 1, fr: 'Récompense de « The Gig » : gratuit chez le charcudoc de Cassius Ryder.', en: 'Reward from “The Gig”: free at Cassius Ryder’s ripperdoc.',
     url: 'https://cyberpunk2077.wiki.fextralife.com/Tattoo:+Tyger+Claws+Dermal+Imprint' },
 };
 // Implants non obtenables (contenu coupé, builds de test : extract-all.mjs) : retirés du site
@@ -314,12 +315,15 @@ const families = cyberware.map((c) => ({
   ...(c.dlc ? { dlc: c.dlc } : {}),
   ...(c.soldByRipperdocs ? { sold: 1 } : {}),
   ...(c.obtainUnknown ? { unk: 1 } : {}),
-  ...(COMMUNITY_SOURCES[c.id] ? { src: COMMUNITY_SOURCES[c.id] } : {}),
+  ...(COMMUNITY_SOURCES[c.id] ? { src: (({ free, ...x }) => x)(COMMUNITY_SOURCES[c.id]) } : {}),
+  ...(COMMUNITY_SOURCES[c.id] && COMMUNITY_SOURCES[c.id].free ? { free: 1 } : {}),
   t: c.tiers.map((t) => {
     const s = slimTier(t);
     // nom / description propres au palier quand ils diffèrent de ceux de la famille (Berserk Mk.1 → Mk.3…)
     if (t.name && t.name.key && c.name && t.name.key !== c.name.key) s.n = txt(t.name);
     if (t.description && t.description.key && c.description && t.description.key !== c.description.key) s.d = txt(t.description);
+    // implant offert : prix de vente du jeu sans objet (on ne l'achète pas)
+    if (COMMUNITY_SOURCES[c.id] && COMMUNITY_SOURCES[c.id].free) delete s.price;
     return s;
   }),
 }));

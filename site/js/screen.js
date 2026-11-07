@@ -338,6 +338,8 @@ export function createScreen(ctx) {
     });
   }
   function install(fam, qi) {
+    // capacité libre insuffisante : refusé, comme au charcudoc (RULES.md §2)
+    if (!ctx.fitsCapacity(ctx.state, game, filterArea, filterSlot, fam.k, qi)) { play('ui_menu_attributes_fail'); ctx.toast(t('noCapacity')); return; }
     ctx.placeImplant(ctx.state, filterArea, filterSlot, fam.k, qi);
     const r = ctx.compute(ctx.state, game);
     const tier = fam.t[qi];
@@ -357,7 +359,7 @@ export function createScreen(ctx) {
       const next = FILTER_ORDER[(idx + d + FILTER_ORDER.length) % FILTER_ORDER.length];
       enterItemMode(next, 0);
     };
-    const families = (game.byArea.get(filterArea) || []).slice().sort((a, b) => g(a.n).localeCompare(g(b.n)));
+    const families = (game.byArea.get(filterArea) || []).filter((f) => ctx.slotAccepts(filterArea, filterSlot, f)).sort((a, b) => g(a.n).localeCompare(g(b.n)));
     const qualities = Object.keys(game.qualities).filter((q) => q !== 'Iconic');
     const pickTier = (fam) => {
       if (!tierFilter) return fam.t.length - 1;
@@ -377,9 +379,10 @@ export function createScreen(ctx) {
       // Déjà installé dans un autre emplacement de la zone : le choisir ici le déplace
       const elsewhere = ctx.installedSlot(ctx.state, filterArea, fam.k);
       const moved = elsewhere >= 0 && elsewhere !== filterSlot;
+      const fits = isCur || ctx.fitsCapacity(ctx.state, game, filterArea, filterSlot, fam.k, qi);
       return h('button', {
-        type: 'button', class: `rd-item ${qClass(tier)} ${isCur ? 'current' : ''} ${moved ? 'elsewhere' : ''}`,
-        title: moved ? t('installedIn', elsewhere + 1) : undefined,
+        type: 'button', class: `rd-item ${qClass(tier)} ${isCur ? 'current' : ''} ${moved ? 'elsewhere' : ''} ${fits ? '' : 'nofit'}`,
+        title: !fits ? t('noCapacity') : moved ? t('installedIn', elsewhere + 1) : undefined,
         'aria-label': `${ctx.nameAt(fam, qi)} — ${qualityName(fam.t[qi].q)}`,
         onmouseenter: (e) => {
           play('ui_menu_hover'); showTooltip(e.currentTarget, fam, qi);
@@ -394,7 +397,7 @@ export function createScreen(ctx) {
       fam.icon ? h('img', { src: `assets/${fam.icon}`, alt: '', loading: 'lazy' }) : null,
       h('span', { class: 'rd-item-name', text: ctx.nameAt(fam, qi) }),
       h('span', { class: 'rd-item-tier', text: qualityName(fam.t[qi].q) }),
-      fam.t[qi].price ? h('span', { class: 'rd-item-price', text: ctx.eddies(ctx.priceOf(fam, qi)) }) : null,
+      fam.t[qi].price ? h('span', { class: 'rd-item-price', text: ctx.eddies(ctx.priceOf(fam, qi)) }) : fam.free ? h('span', { class: 'rd-item-price', text: t('freeReward') }) : null,
       fam.iconic ? h('span', { class: 'rd-item-iconic', text: '◆' }) : null,
       moved ? h('span', { class: 'rd-item-installed', text: t('installedIn', elsewhere + 1) }) : null);
     });

@@ -59,7 +59,7 @@ Repère utilisé par l'interface pour la longueur de la jauge (pas une limite de
 | Chaque implant a **un coût fixe** donné par sa variante (`Variants.HumanityXXCost`), **le même pour tous les paliers** | ✅ | `tweaks/items/cyberware/variants/variants.tweak` ; données : `capacityCost` dans `cyberware.json` |
 | Perk « Cyberbricoleuse » niveau 2 (`Tech_Central_Milestone_2`) : **−20 %** sur les implants dont la variante est « …TinkererVariant » (squelette et système tégumentaire uniquement). Ex. 35 → 28 | ✅ | `variants.tweak` (`Humanity35CostTinkererVariant` : 35 − 7 × `CyberwareTinkererStat`) ; `tech_new_perks.tweak` l. 292-319 ; texte du perk niveau 2 |
 | Capacité libre = `Humanity − HumanityAllocated` (+ bonus Edgerunner, §3) | ✅ | `player_base_stats.tweak` l. 1842-1854 (`HumanityAvailable`) |
-| Pour installer un implant, il faut une capacité libre ≥ son coût | ✅ | `ripperdoc.script` `GetCapacityHoverEventData` l. 2081-2101 ; `player.script` `GetItemCapacityRequirement` l. 3483-3501 |
+| Pour installer un implant, il faut une capacité libre ≥ son coût (le site refuse l'installation sinon, implant grisé dans l'inventaire ; un échange qui ne demande pas plus de capacité reste permis) | ✅ | `ripperdoc.script` `GetCapacityHoverEventData` l. 2081-2101 ; `player.script` `GetItemCapacityRequirement` l. 3483-3501 |
 | En remplaçant un implant, la variation = coût du nouveau − coût de l'ancien | ✅ | `ripperdoc.script` l. 2086-2094 |
 
 ### Dépassement de capacité
@@ -121,6 +121,8 @@ Chaque implant 2.x a une pièce interne qui porte des stats secondaires.
 | 2e slot du visage : débloqué par une quête (fait `cw_mask_slot_unlocked`), caché tant qu'il est verrouillé | ✅ | idem |
 
 Données : `sideVariant` dans chaque palier de `cyberware.json` ; `slots.json`.
+
+**Visage** : le 1er emplacement reçoit les optiques, le 2e (Phantom Liberty) **uniquement** la plaque faciale (`Items.MaskCW`) ; on ne peut pas installer deux paires d'yeux. Règle constatée en jeu par l'utilisateur ; la restriction n'est pas écrite dans les tweaks ni les scripts (moteur natif). Le jeu traite la plaque à part : `ripperdoc.script` l. 552 et 604 (`T"Items.MaskCW"`), `player.script` `GetCWMaskID` l. 1383 (tag `MaskCW` dans `EyesCW`). Sur le site, un ancien lien avec des yeux dans le 2e emplacement les retire au chargement.
 
 **Doublons** : un même implant ne peut pas être installé dans deux emplacements (règle du jeu, constatée en jeu par l'utilisateur) ; le choisir dans un autre emplacement le déplace.
 
@@ -274,3 +276,16 @@ Vérifié dans les tweaks : aucune référence « Items.X » (vendeur, butin, r�
 ## 16. Boucle de fond du charcudoc
 
 `ui_gui_cyberware_tab_open` (joué à l'ouverture, ripperdoc.script) et `ui_gui_cyberware_paperdoll_zoom_out_01` sont « isLooping » dans les métadonnées Wwise et partagent le même son (4,7 s) : c'est la boucle qui tourne tant que le menu est ouvert. Sur le site, elle démarre au premier geste (les navigateurs bloquent le son avant) et ne tourne qu'en un exemplaire.
+
+---
+
+## 17. Implants offerts
+
+Certains implants ne s'achètent pas : ils sont donnés par une mission. Le site ne compte alors **aucun prix** dans le coût du build
+(affiché « Offert (récompense de mission) ») ; leurs améliorations coûtent toujours des composants.
+
+| Implant | Pourquoi | Source |
+|---|---|---|
+| Plaque faciale liée à une empreinte comportementale (`MaskCW`) | coût en capacité 0 (`Variants.Humanity0Cost`), objet iconique (`IsItemIconic = 1`), aucun vendeur ; récompense de mission de Phantom Liberty | `tweaks/items/cyberware/mask.tweak` ; obtention : info communautaire (§12) |
+| Optiques Kiroshi Mk. 1 (`AdvancedKiroshiOptics`) | aucun vendeur ; offertes par Viktor | info communautaire (§12) |
+| Tatouages Casius / Tyger Claws | aucun vendeur ; récompenses de mission | info communautaire (§12) |

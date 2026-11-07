@@ -1,6 +1,6 @@
 // Interface du planner : vue Build (corps + slots + récapitulatif), Catalogue, À propos.
 
-import { ATTRIBUTES, PERK_LEVELS, MAX_LEVEL, defaultState, indexGame, compute, slotUnlocked, effectiveTier, tierCost, tierPrice, nextUpgrade, placeImplant, installedSlot, canChooseStats, randomShardSlots } from './engine.js';
+import { ATTRIBUTES, PERK_LEVELS, MAX_LEVEL, defaultState, indexGame, compute, slotUnlocked, effectiveTier, tierCost, tierPrice, nextUpgrade, placeImplant, installedSlot, canChooseStats, randomShardSlots, slotAccepts, fitsCapacity } from './engine.js';
 import { t, g, getLang, setLang, setMaleTexts, loadLangTexts, setPerkNames, LANGUAGES, LANG_NAMES } from './i18n.js';
 import { initAudio, play, isMuted, setMuted, getVolume, setVolume } from './audio.js';
 import { encodeState, decodeState } from './share.js';
@@ -139,10 +139,16 @@ function save() {
   try { localStorage.setItem('build', enc); } catch { /* ignoré */ }
   history.replaceState(null, '', `#b=${enc}`);
 }
+// Anciens liens : un implant dans un emplacement qui ne l'accepte pas (ex. des yeux dans l'emplacement de la plaque faciale) est retiré
+function readState(str) {
+  const s = decodeState(str, game);
+  for (const [area, list] of Object.entries(s.slots)) list.forEach((x, i) => { if (x && !slotAccepts(area, i, game.byKey.get(x.k))) list[i] = null; });
+  return s;
+}
 function loadInitialState() {
   const m = location.hash.match(/#b=([^&]+)/);
-  if (m) return decodeState(decodeURIComponent(m[1]), game);
-  try { const s = localStorage.getItem('build'); if (s) return decodeState(s, game); } catch { /* ignoré */ }
+  if (m) return readState(decodeURIComponent(m[1]));
+  try { const s = localStorage.getItem('build'); if (s) return readState(s); } catch { /* ignoré */ }
   return defaultState(game);
 }
 let screen = null; // écran du charcudoc fidèle au jeu (bureau)
@@ -506,6 +512,7 @@ function badges(fam) {
 function tierSummary(fam, tier, qi) {
   const parts = [h('span', {}, `${t('cost')} `, h('span', { class: 'v', text: tierCost(state, tier) }))];
   if (fam.t[qi].price) parts.push(h('span', {}, `${t('price')} `, h('span', { class: 'v', text: eddies(priceOf(fam, qi)) })));
+  else if (fam.free) parts.push(h('span', { class: 'v', text: t('freeReward') }));
   for (const [s, v] of Object.entries(tier.st || {})) parts.push(h('span', {}, `${statLabel(s)} `, h('span', { class: 'v', text: fmtStat(s, v) })));
   if (tier.dps) parts.push(h('span', {}, `${t('dps')} `, h('span', { class: 'v', text: num(tier.dps, 1) })));
   if (tier.capb) parts.push(h('span', {}, `${t('capGiven')} `, h('span', { class: 'v', text: `+${num(tier.capb, 0)}` })));
@@ -517,10 +524,11 @@ function openPicker(areaId, slotIndex) {
   const dlg = $('#picker');
   const current = state.slots[areaId][slotIndex];
   const filters = { q: '', sold: false, iconic: false, dlc: false };
-  const families = (game.byArea.get(areaId) || []).slice().sort((a, b) => g(a.n).localeCompare(g(b.n)));
+  const families = (game.byArea.get(areaId) || []).filter((f) => slotAccepts(areaId, slotIndex, f)).sort((a, b) => g(a.n).localeCompare(g(b.n)));
   const list = h('div', { class: 'items' });
 
   function install(fam, qi) {
+    if (!fitsCapacity(state, game, areaId, slotIndex, fam.k, qi)) { play('ui_menu_attributes_fail'); toast(t('noCapacity')); return; }
     placeImplant(state, areaId, slotIndex, fam.k, qi);
     const r = compute(state, game);
     play(r.overInvalid ? 'ui_menu_attributes_fail' : 'ui_menu_item_bought');
@@ -615,7 +623,8 @@ function gameCard(fam, qi, { secBlock = null, desc = false } = {}) {
         return line;
       })),
     desc && descAt(fam, qi) ? h('p', { class: 'gc-desc', text: descAt(fam, qi) }) : null,
-    fam.t[qi].price ? h('div', { class: 'gc-price', title: t('price') }, icon('eddies'), h('b', { text: num(priceOf(fam, qi), 0) })) : null);
+    fam.t[qi].price ? h('div', { class: 'gc-price', title: t('price') }, icon('eddies'), h('b', { text: num(priceOf(fam, qi), 0) }))
+      : fam.free ? h('div', { class: 'gc-price' }, h('b', { text: t('freeReward') })) : null);
 }
 // upgrade : fenêtre d'amélioration (palier suivant, coût, options) ; sinon modification du choix d'un implant déjà amélioré
 function openStatChoice(areaId, slotIndex, { upgrade = false } = {}) {
@@ -832,7 +841,7 @@ function tierTable(fam) {
   const secKeys = [...new Map(tiers.flatMap((x) => (x.sec || []).map((s) => [s.s, s]))).values()];
   const rows = [];
   rows.push(h('tr', {}, h('td', { text: t('cost') }), tiers.map((x) => h('td', { text: tierCost(state, x) }))));
-  rows.push(h('tr', {}, h('td', { text: t('price') }), fam.t.map((x, i) => h('td', { text: x.price ? eddies(priceOf(fam, i)) : '—' }))));
+  rows.push(h('tr', {}, h('td', { text: t('price') }), fam.t.map((x, i) => h('td', { text: x.price ? eddies(priceOf(fam, i)) : fam.free ? t('freeReward') : '—' }))));
   if (fam.t.some((x) => x.up)) rows.push(h('tr', {}, h('td', {}, t('upgradeCost'), h('span', { class: 'hint', text: ` (${t('fromPrev')})` })),
     fam.t.map((x) => h('td', {}, x.up ? matEl(x.up.mat, x.up.n) : '—'))));
   for (const s of statKeys) rows.push(h('tr', {}, h('td', { text: statLabel(s) }), tiers.map((x) => h('td', { text: x.st && x.st[s] !== undefined ? fmtStat(s, x.st[s]) : '—' }))));
@@ -1197,7 +1206,7 @@ document.addEventListener('keydown', (e) => {
 });
 window.addEventListener('hashchange', () => {
   const m = location.hash.match(/#b=([^&]+)/);
-  if (m && decodeURIComponent(m[1]) !== encodeState(state, game)) { state = decodeState(decodeURIComponent(m[1]), game); renderSettings(); update(); }
+  if (m && decodeURIComponent(m[1]) !== encodeState(state, game)) { state = readState(decodeURIComponent(m[1])); renderSettings(); update(); }
 });
 
 // ---------------------------------------------------------------- démarrage
@@ -1242,7 +1251,7 @@ function loadingProgress(p) {
     h, fill, $, game, t, g, num, qualityName, areaName, qClass, play, showTooltip, hideTooltip, showGaugeTip,
     nameAt, compute, slotUnlocked, effectiveTier, tierCost, nextUpgrade, openStatChoice,
     canChoose: (area, slot) => { const s = state.slots[area][slot]; const f = familyOf(s); return !!f && canChooseStats(state, game, area, f, s.q); },
-    randomChosen: (area, slot) => !!(state.slots[area][slot] && state.slots[area][slot].r), eddies, priceOf, matEl, upgradeSlot, placeImplant, installedSlot,
+    randomChosen: (area, slot) => !!(state.slots[area][slot] && state.slots[area][slot].r), eddies, priceOf, matEl, upgradeSlot, placeImplant, installedSlot, slotAccepts, fitsCapacity, toast,
     get state() { return state; },
     getGender: () => gender,
     videosOn: videosWanted,

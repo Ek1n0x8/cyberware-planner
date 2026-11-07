@@ -8,6 +8,7 @@ export const LANG_NAMES = {
 
 export const EXTRA_STRINGS = {
   es: {
+    noCapacity: 'Capacidad de ciberware insuficiente', freeReward: 'Gratis (recompensa de misión)',
     title: 'Planificador de ciberware', tabBuild: 'Build', tabCatalog: 'Catálogo', tabAbout: 'Acerca de', tabOptions: 'Opciones',
     character: 'Personaje', level: 'Nivel', techSkill: 'Habilidad técnica', back: 'Volver', statsEffects: 'Estadísticas y efectos',
     bodyMan: 'V hombre', bodyWoman: 'V mujer', attributes: 'Atributos', perks: 'Ventajas de ciberware', shards: 'Fragmentos de capacidad (bonificación total)',
@@ -35,6 +36,7 @@ export const EXTRA_STRINGS = {
     credits: 'Cyberpunk 2077, sus textos, iconos y sonidos © CD PROJEKT RED. Sitio gratuito, sin publicidad.', dataFrom: 'Datos extraídos de los archivos del juego',
   },
   pt: {
+    noCapacity: 'Capacidade de cyberware insuficiente', freeReward: 'Grátis (recompensa de missão)',
     title: 'Planejador de cyberware', tabBuild: 'Build', tabCatalog: 'Catálogo', tabAbout: 'Sobre', tabOptions: 'Opções',
     character: 'Personagem', level: 'Nível', techSkill: 'Habilidade técnica', back: 'Voltar', statsEffects: 'Estatísticas e efeitos',
     bodyMan: 'V homem', bodyWoman: 'V mulher', attributes: 'Atributos', perks: 'Vantagens de cyberware', shards: 'Fragmentos de capacidade (bônus total)',
@@ -62,6 +64,7 @@ export const EXTRA_STRINGS = {
     credits: 'Cyberpunk 2077, seus textos, ícones e sons © CD PROJEKT RED. Site gratuito, sem anúncios.', dataFrom: 'Dados extraídos dos arquivos do jogo',
   },
   de: {
+    noCapacity: 'Nicht genug Cyberware-Kapazität', freeReward: 'Gratis (Auftragsbelohnung)',
     title: 'Cyberware-Planer', tabBuild: 'Build', tabCatalog: 'Katalog', tabAbout: 'Info', tabOptions: 'Optionen',
     character: 'Charakter', level: 'Stufe', techSkill: 'Technik-Fertigkeit', back: 'Zurück', statsEffects: 'Werte & Effekte',
     bodyMan: 'Männlicher V', bodyWoman: 'Weibliche V', attributes: 'Attribute', perks: 'Cyberware-Perks', shards: 'Kapazitäts-Splitter (Gesamtbonus)',
@@ -89,6 +92,7 @@ export const EXTRA_STRINGS = {
     credits: 'Cyberpunk 2077, seine Texte, Symbole und Sounds © CD PROJEKT RED. Kostenlose Seite, ohne Werbung.', dataFrom: 'Daten aus den Spieldateien extrahiert',
   },
   it: {
+    noCapacity: 'Capacità cyberware insufficiente', freeReward: 'Gratis (ricompensa della missione)',
     title: 'Pianificatore di cyberware', tabBuild: 'Build', tabCatalog: 'Catalogo', tabAbout: 'Info', tabOptions: 'Opzioni',
     character: 'Personaggio', level: 'Livello', techSkill: 'Abilità tecnica', back: 'Indietro', statsEffects: 'Statistiche ed effetti',
     bodyMan: 'V uomo', bodyWoman: 'V donna', attributes: 'Attributi', perks: 'Vantaggi cyberware', shards: 'Frammenti di capacità (bonus totale)',
@@ -116,6 +120,7 @@ export const EXTRA_STRINGS = {
     credits: 'Cyberpunk 2077, i suoi testi, icone e suoni © CD PROJEKT RED. Sito gratuito, senza pubblicità.', dataFrom: 'Dati estratti dai file del gioco',
   },
   pl: {
+    noCapacity: 'Za mała pojemność wszczepów', freeReward: 'Za darmo (nagroda za zlecenie)',
     title: 'Planer cyberwszczepów', tabBuild: 'Build', tabCatalog: 'Katalog', tabAbout: 'O stronie', tabOptions: 'Opcje',
     character: 'Postać', level: 'Poziom', techSkill: 'Umiejętność techniczna', back: 'Wróć', statsEffects: 'Statystyki i efekty',
     bodyMan: 'V mężczyzna', bodyWoman: 'V kobieta', attributes: 'Atrybuty', perks: 'Atuty cyberwszczepów', shards: 'Odłamki pojemności (łączny bonus)',
@@ -143,6 +148,7 @@ export const EXTRA_STRINGS = {
     credits: 'Cyberpunk 2077, jego teksty, ikony i dźwięki © CD PROJEKT RED. Darmowa strona, bez reklam.', dataFrom: 'Dane wyodrębnione z plików gry',
   },
   ru: {
+    noCapacity: 'Недостаточно ёмкости киберимплантов', freeReward: 'Бесплатно (награда за задание)',
     title: 'Планировщик киберимплантов', tabBuild: 'Сборка', tabCatalog: 'Каталог', tabAbout: 'О сайте', tabOptions: 'Настройки',
     character: 'Персонаж', level: 'Уровень', techSkill: 'Навык «Техника»', back: 'Назад', statsEffects: 'Характеристики и эффекты',
     bodyMan: 'Ви (мужчина)', bodyWoman: 'Ви (женщина)', attributes: 'Атрибуты', perks: 'Навыки для имплантов', shards: 'Осколки ёмкости (общий бонус)',
@@ -170,6 +176,7 @@ export const EXTRA_STRINGS = {
     credits: 'Cyberpunk 2077, его тексты, значки и звуки © CD PROJEKT RED. Бесплатный сайт без рекламы.', dataFrom: 'Данные извлечены из файлов игры',
   },
   zh: {
+    noCapacity: '义体容量不足', freeReward: '免费（任务奖励）',
     title: '义体规划器', tabBuild: '配置', tabCatalog: '目录', tabAbout: '关于', tabOptions: '选项',
     character: '角色', level: '等级', techSkill: '技术技能', back: '返回', statsEffects: '属性与效果',
     bodyMan: '男性 V', bodyWoman: '女性 V', attributes: '属性', perks: '义体相关技能', shards: '容量芯片（总加成）',
@@ -197,6 +204,7 @@ export const EXTRA_STRINGS = {
     credits: '《赛博朋克 2077》及其文本、图标和音效 © CD PROJEKT RED。免费网站，无广告。', dataFrom: '数据提取自游戏文件',
   },
   ja: {
+    noCapacity: 'サイバーウェア容量が足りません', freeReward: '無料（ジョブ報酬）',
     title: 'サイバーウェア・プランナー', tabBuild: 'ビルド', tabCatalog: 'カタログ', tabAbout: 'このサイトについて', tabOptions: 'オプション',
     character: 'キャラクター', level: 'レベル', techSkill: 'テックスキル', back: '戻る', statsEffects: 'ステータスと効果',
     bodyMan: '男性V', bodyWoman: '女性V', attributes: '能力値', perks: 'サイバーウェア関連のパーク', shards: '容量シャード（合計ボーナス）',
@@ -224,6 +232,7 @@ export const EXTRA_STRINGS = {
     credits: 'サイバーパンク2077、そのテキスト、アイコン、サウンド © CD PROJEKT RED。無料・広告なしのサイトです。', dataFrom: 'ゲームファイルから抽出したデータ',
   },
   ko: {
+    noCapacity: '사이버웨어 용량 부족', freeReward: '무료 (임무 보상)',
     title: '사이버웨어 플래너', tabBuild: '빌드', tabCatalog: '카탈로그', tabAbout: '정보', tabOptions: '옵션',
     character: '캐릭터', level: '레벨', techSkill: '기술 스킬', back: '뒤로', statsEffects: '능력치 및 효과',
     bodyMan: '남성 V', bodyWoman: '여성 V', attributes: '속성', perks: '사이버웨어 관련 특성', shards: '용량 샤드(총 보너스)',
@@ -251,6 +260,7 @@ export const EXTRA_STRINGS = {
     credits: '사이버펑크 2077, 그 텍스트, 아이콘 및 사운드 © CD PROJEKT RED. 무료 사이트, 광고 없음.', dataFrom: '게임 파일에서 추출한 데이터',
   },
   ar: {
+    noCapacity: 'سعة السايبروير غير كافية', freeReward: 'مجاني (مكافأة مهمة)',
     title: 'مخطط الأجهزة السيبرانية', tabBuild: 'البناء', tabCatalog: 'الكتالوج', tabAbout: 'حول', tabOptions: 'الخيارات',
     character: 'الشخصية', level: 'المستوى', techSkill: 'المهارة التقنية', back: 'رجوع', statsEffects: 'الإحصاءات والتأثيرات',
     bodyMan: 'V ذكر', bodyWoman: 'V أنثى', attributes: 'السمات', perks: 'مزايا الأجهزة السيبرانية', shards: 'شظايا السعة (المكافأة الإجمالية)',

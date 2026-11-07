@@ -75,6 +75,22 @@ export function placeImplant(state, area, slot, k, q) {
   for (const [a, list] of Object.entries(state.slots)) list.forEach((s, i) => { if (s && s.k === k && !(a === area && i === slot)) list[i] = null; });
   state.slots[area][slot] = { k, q };
 }
+// Visage : le 1er emplacement reçoit les yeux, le 2e (débloqué par Phantom Liberty) seulement la plaque faciale
+// (RULES.md §6 ; le jeu n'autorise qu'une paire d'optiques)
+export const MASK_ID = 'MaskCW';
+export function slotAccepts(area, slot, family) {
+  if (area !== 'EyesCW' || !family) return true;
+  return slot === 1 ? family.id === MASK_ID : family.id !== MASK_ID;
+}
+// Comme au charcudoc : on ne peut installer que si la capacité libre suffit (RULES.md §2).
+// Un échange qui ne demande pas plus de capacité reste permis (build déjà au-dessus après une baisse de capacité).
+export function fitsCapacity(state, game, area, slot, k, q) {
+  const before = compute(state, game);
+  const trial = { ...state, slots: Object.fromEntries(Object.entries(state.slots).map(([a, l]) => [a, l.slice()])) };
+  placeImplant(trial, area, slot, k, q);
+  const after = compute(trial, game);
+  return after.capUsed - after.capMax <= after.overMax || (after.capUsed - after.capMax) <= (before.capUsed - before.capMax);
+}
 // Emplacement (index) où cet implant est déjà installé dans la zone, ou -1
 export function installedSlot(state, area, k) {
   return (state.slots[area] || []).findIndex((s) => s && s.k === k);

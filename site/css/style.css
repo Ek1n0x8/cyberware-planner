@@ -530,6 +530,8 @@ table.tiers td.fx { font-family: var(--font); color: var(--text); text-align: le
   background: rgba(10, 30, 36, .7); border: 2px solid var(--rd-cyan); padding: 10px 30px; cursor: pointer; }
 .rd-back:hover, .rd-back:focus-visible { outline: none; background: rgba(94, 245, 255, .2); }
 .rd-item.elsewhere { opacity: .75; }
+.rd-item.nofit { opacity: .45; }
+.rd-item.nofit .rd-item-cost { color: #ff5c5c; }
 .rd-item-installed { position: absolute; left: 10px; right: 10px; top: 44px; font: 600 16px var(--font); color: #000; background: var(--rd-cyan); padding: 2px 6px; text-align: center; }
 .rd-item-price { position: absolute; right: 10px; bottom: 8px; font: 18px var(--mono); color: var(--rd-yellow); }
 .rd-actions { display: flex; gap: 24px; align-items: stretch; flex-wrap: wrap; }
